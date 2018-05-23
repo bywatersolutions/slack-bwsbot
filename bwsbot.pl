@@ -79,7 +79,7 @@ my $handle_coffee = sub {
 
     $bot->say(
         channel => $response->{channel},
-        text    => $meter,
+        text    => "Coffee: $meter",
     );
 };
 $bot->on( { text => $regex_coffee }, $handle_coffee );
