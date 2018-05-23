@@ -11,6 +11,7 @@ my $bot = Slack::RTM::Bot->new( token => $slack_bot_token );
 
 my $regex_rt = qr/(ticket|rt)\s*([0-9]+)/mi;
 my $regex_bz = qr/(bug|bz)\s*([0-9]+)/mi;
+my $regex_coffee = qr/(coffee)\s*([0-9]+)/mi;
 
 my $handle_ticket_numbers = sub {
     my ($response) = @_;
@@ -27,6 +28,36 @@ my $handle_ticket_numbers = sub {
     $bot->say(
         channel => $response->{channel},
         text    => $text,
+    );
+};
+
+my $handle_coffee = sub {
+    my ($response) = @_;
+
+    return unless $response->{channel};
+
+    $response->{text} =~ $regex_bz;
+
+    my $percent = $2;
+    
+    my $pointer = ( (abs $percent)  < 5) 
+                ?  '' : (  (abs $percent)  < 10 ) 
+                ?  '|' : (  (abs $percent) < 95 )
+                ?  '>|'  : '>' ;
+
+    my $bars = (  (abs $percent)/5 ) - length( $pointer );
+
+    my $dots=20 - $bars - length( $pointer );
+
+    my $meter = "|" . "=" x $bars . $pointer . "." x $dots . "|";
+    if ( $percent < 0 ) {
+        $meter =~ s/>/</;
+        $meter = reverse( $meter );
+    }
+
+    $bot->say(
+        channel => $response->{channel},
+        text    => $meter,
     );
 };
 
@@ -59,6 +90,13 @@ $bot->on(
         text => $regex_bz,
     },
     $handle_bug_numbers
+);
+
+$bot->on(
+    {
+        text => $regex_coffee,
+    },
+    $handle_coffee
 );
 
 $bot->start_RTM(
