@@ -1,5 +1,11 @@
 #!/usr/bin/env perl
 
+=head1 NAME
+
+bwsbot - A Slackbot for ByWater Solutions
+
+=cut
+
 use Modern::Perl;
 use Slack::RTM::Bot;
 
@@ -9,10 +15,17 @@ die "No SLACK_BOT_TOKEN set!" unless $slack_bot_token;
 
 my $bot = Slack::RTM::Bot->new( token => $slack_bot_token );
 
-my $regex_rt     = qr/(ticket|rt)\s*([0-9]+)/mi;
-my $regex_bz     = qr/(bug|bz)\s*([0-9]+)/mi;
-my $regex_coffee = qr/(coffee)\s*([0-9]+)/mi;
+=head1 Capabilities
 
+=head2 handle_ticket_numbers
+
+    Converts RT ticket numbers into URLs.
+    Can be of the form "ticket 1234" or "rt 1234".
+    The keywords are case insenstivie.
+
+=cut
+
+my $regex_rt     = qr/(ticket|rt)\s*([0-9]+)/mi;
 my $handle_ticket_numbers = sub {
     my ($response) = @_;
 
@@ -34,6 +47,15 @@ my $handle_ticket_numbers = sub {
 };
 $bot->on( { text => $regex_rt }, $handle_ticket_numbers );
 
+=head2 handle_bug_numbers
+
+    Converts Koha community bug numbers into URLs.
+    Can be of the form "bug 1234" or "bz 1234".
+    The keywords are case insenstivie.
+
+=cut
+
+my $regex_bz     = qr/(bug|bz)\s*([0-9]+)/mi;
 my $handle_bug_numbers = sub {
     my ($response) = @_;
 
@@ -52,6 +74,14 @@ my $handle_bug_numbers = sub {
 };
 $bot->on( { text => $regex_bz }, $handle_bug_numbers );
 
+=head2 handle_coffee
+
+    Prints a nice bar indicating the percentage of wakefullness you are at.
+    E.g. coffee 50
+
+=cut
+
+my $regex_coffee = qr/(coffee)\s*([0-9]+)/mi;
 my $handle_coffee = sub {
     my ($response) = @_;
 
