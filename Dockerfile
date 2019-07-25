@@ -1,10 +1,11 @@
 FROM perl:latest
+MAINTAINER Kyle M Hall <kyle@bywatersolutions.com>
 
 LABEL maintainer="kyle@bywatersolutions.com"
 
-RUN cpanm Modern::Perl Slack::RTM::Bot
+RUN cpanm --notest Modern::Perl Slack::RTM::Bot YAML::XS
 
 WORKDIR /app
-ADD . /app
+COPY . .
 
 CMD perl bwsbot.pl
