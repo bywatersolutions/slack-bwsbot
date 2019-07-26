@@ -14,7 +14,7 @@ use YAML::XS qw(LoadFile DumpFile);
 
 my $slack_bot_token = $ENV{SLACK_BOT_TOKEN};
 my $data_file       = $ENV{DATA_FILE};
-my $debug           = 1;
+my $debug           = $ENV{DEBUG} || 0;
 
 say "BWSBot is starting!" if $debug;
 
