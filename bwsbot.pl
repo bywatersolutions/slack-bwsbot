@@ -354,15 +354,14 @@ $bot->on( { text => $regex_agenda_list_items }, $handle_agenda_list_items );
 
 $bot->start_RTM(
     sub {
-
         $bot->say(
             channel => 'general',
-            text    => 'bwsbot at your service!',
+            text    => get_joke(),
         );
 
         my $step = 1;
         while (1) {
-            sleep 10;
+            sleep 60;
             print time . " ";
             say $step % 3 ? "Stayin' alive!" : "Ah, ha, ha, ha";
             $step++;
@@ -370,3 +369,8 @@ $bot->start_RTM(
     }
 );
 
+sub get_joke {
+    my $joke = qx{curl -H "Accept: text/plain" https://icanhazdadjoke.com/};
+    $joke ||= "No joke for you!";
+    return $joke;
+}
