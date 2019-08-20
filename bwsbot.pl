@@ -372,7 +372,10 @@ $bot->start_RTM(
 sub get_quote {
     my ( $sec, $min, $hour, $mday, $mon, $year ) = localtime(time);
 
-    if ( $hour % 2 ) {
+    if ( $hour % 3 ) {
+        return get_math_fact();
+    }
+    elsif ( $hour % 2 ) {
         return get_joke();
     }
     else {
@@ -390,5 +393,10 @@ sub get_cat_fact {
     my $json = qx{curl https://cat-fact.herokuapp.com/facts/random/};
     my $data = Load($json);
     my $fact = $data->{text};
+    return $fact;
+}
+
+sub get_math_fact {
+    my $fact = qx{http://numbersapi.com/random/trivia};
     return $fact;
 }
