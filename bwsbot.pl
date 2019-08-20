@@ -10,7 +10,7 @@ use feature qw(say);
 
 use Modern::Perl;
 use Slack::RTM::Bot;
-use YAML::XS qw(LoadFile DumpFile);
+use YAML::XS qw(LoadFile DumpFile Load);
 
 my $slack_bot_token = $ENV{SLACK_BOT_TOKEN};
 my $data_file       = $ENV{DATA_FILE};
@@ -356,7 +356,7 @@ $bot->start_RTM(
     sub {
         $bot->say(
             channel => 'general',
-            text    => get_joke(),
+            text    => get_quote(),
         );
 
         my $step = 1;
@@ -369,8 +369,26 @@ $bot->start_RTM(
     }
 );
 
+sub get_quote {
+    my ( $sec, $min, $hour, $mday, $mon, $year ) = localtime(time);
+
+    if ( $hour % 2 ) {
+        return get_joke();
+    }
+    else {
+        return get_cat_fact();
+    }
+}
+
 sub get_joke {
     my $joke = qx{curl -H "Accept: text/plain" https://icanhazdadjoke.com/};
     $joke ||= "No joke for you!";
     return $joke;
+}
+
+sub get_cat_fact {
+    my $json = qx{curl https://cat-fact.herokuapp.com/facts/random/};
+    my $data = Load($json);
+    my $fact = $data->{text};
+    return $fact;
 }
