@@ -372,7 +372,7 @@ $bot->start_RTM(
 );
 
 sub get_quote {
-    my @APIs = shuffle( \&get_math_fact, \&get_joke, \&get_cat_fact );
+    my @APIs = shuffle( \&get_math_fact, \&get_joke, \&get_cat_fact, \&get_kanye_quote );
     my $sub  = @APIs[0];
     return $sub->();
 }
@@ -388,6 +388,13 @@ sub get_cat_fact {
     my $data = Load($json);
     my $fact = $data->{text};
     return $fact;
+}
+
+sub get_kanye_quote {
+    my $json = qx{curl https://api.kanye.rest};
+    my $data = Load($json);
+    my $quote = $data->{quote};
+    return "$quote - Kanye West";
 }
 
 sub get_math_fact {
