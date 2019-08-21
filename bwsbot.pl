@@ -372,8 +372,10 @@ $bot->start_RTM(
 );
 
 sub get_quote {
-    my @APIs = shuffle( \&get_math_fact, \&get_joke, \&get_cat_fact, \&get_kanye_quote, &get_insperational_quote );
-    my $sub  = @APIs[0];
+    my @APIs =
+      shuffle( \&get_math_fact, \&get_joke, \&get_cat_fact, \&get_kanye_quote,
+        \&get_insperational_quote, \&get_programming_quote, );
+    my $sub = $APIs[0];
     return $sub->();
 }
 
@@ -393,14 +395,19 @@ sub get_cat_fact {
 sub get_kanye_quote {
     my $json = qx{curl https://api.kanye.rest};
     my $data = Load($json);
-    my $quote = $data->{quote};
-    return "$quote - Kanye West";
+    return "$data->{quote} - Kanye West";
 }
 
 sub get_insperational_quote {
     my $json = qx{curl http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json};
     my $data = Load($json);
-    return "$quote->{quoteText} - $quote->{quoteAuthor}";
+    return "$data->{quoteText} - $data->{quoteAuthor}";
+}
+
+sub get_programming_quote {
+    my $json = qx{curl https://programming-quotes-api.herokuapp.com/quotes/random};
+    my $data = Load($json);
+    return "$data->{en} - $data->{author}";
 }
 
 sub get_math_fact {
