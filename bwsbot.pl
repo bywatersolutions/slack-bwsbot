@@ -9,6 +9,8 @@ bwsbot - A Slackbot for ByWater Solutions
 use feature qw(say);
 
 use Modern::Perl;
+
+use List::Util qw(shuffle);
 use Slack::RTM::Bot;
 use YAML::XS qw(LoadFile DumpFile Load);
 
@@ -370,17 +372,9 @@ $bot->start_RTM(
 );
 
 sub get_quote {
-    my ( $sec, $min, $hour, $mday, $mon, $year ) = localtime(time);
-
-    if ( $hour % 3 ) {
-        return get_math_fact();
-    }
-    elsif ( $hour % 2 ) {
-        return get_joke();
-    }
-    else {
-        return get_cat_fact();
-    }
+    my @APIs = shuffle( \&get_math_fact, \&get_joke, \&get_cat_fact );
+    my $sub  = @APIs[0];
+    return $sub->();
 }
 
 sub get_joke {
@@ -397,6 +391,6 @@ sub get_cat_fact {
 }
 
 sub get_math_fact {
-    my $fact = qx{http://numbersapi.com/random/trivia};
+    my $fact = qx{curl http://numbersapi.com/random/trivia};
     return $fact;
 }
