@@ -372,7 +372,7 @@ $bot->start_RTM(
 );
 
 sub get_quote {
-    my @APIs = shuffle( \&get_math_fact, \&get_joke, \&get_cat_fact, \&get_kanye_quote );
+    my @APIs = shuffle( \&get_math_fact, \&get_joke, \&get_cat_fact, \&get_kanye_quote, &get_insperational_quote );
     my $sub  = @APIs[0];
     return $sub->();
 }
@@ -395,6 +395,12 @@ sub get_kanye_quote {
     my $data = Load($json);
     my $quote = $data->{quote};
     return "$quote - Kanye West";
+}
+
+sub get_insperational_quote {
+    my $json = qx{curl http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json};
+    my $data = Load($json);
+    return "$quote->{quoteText} - $quote->{quoteAuthor}";
 }
 
 sub get_math_fact {
