@@ -354,6 +354,33 @@ my $handle_agenda_list_items = sub {
 };
 $bot->on( { text => $regex_agenda_list_items }, $handle_agenda_list_items );
 
+my $regex_taco_me = qr/taco me$/mi;
+my $handle_taco_me = sub {
+    my ($response) = @_;
+    warn "hanlde_taco_me" if $debug;
+
+    my $json = qx{curl http://taco-randomizer.herokuapp.com/random/};
+    my $data = Load($json);
+
+    my $msg = qq{Here's your taco:\n
+<$data->{base_layer}->{url}|Base layer>\n
+>$data->{base_layer}->{recipe}\n
+<$data->{seasoning}->{url}|Seasoning>\n
+>$data->{seasoning}->{recipe}\n
+<$data->{mixin}->{url}|Mixin>\n
+>$data->{mixin}->{recipe}\n
+<$data->{shell}->{url}|Shell>\n
+>$data->{shell}->{recipe}\n
+<$data->{condiment}->{url}|Condiment>\n
+>$data->{condiment}->{recipe}\n};
+
+    $bot->say(
+        channel => $response->{channel},
+        text    => $msg,
+    );
+};
+$bot->on( { text => $regex_taco_me }, $handle_taco_me );
+
 $bot->start_RTM(
     sub {
         $bot->say(
