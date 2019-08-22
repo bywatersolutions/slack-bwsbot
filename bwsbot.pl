@@ -354,7 +354,7 @@ my $handle_agenda_list_items = sub {
 };
 $bot->on( { text => $regex_agenda_list_items }, $handle_agenda_list_items );
 
-my $regex_taco_me = qr/taco me$/mi;
+my $regex_taco_me  = qr/taco me$/mi;
 my $handle_taco_me = sub {
     my ($response) = @_;
     warn "hanlde_taco_me" if $debug;
@@ -364,15 +364,15 @@ my $handle_taco_me = sub {
 
     my $msg = qq{Here's your taco:\n
 <$data->{base_layer}->{url}|Base layer>\n
->$data->{base_layer}->{recipe}\n
+$data->{base_layer}->{recipe}\n
 <$data->{seasoning}->{url}|Seasoning>\n
->$data->{seasoning}->{recipe}\n
+$data->{seasoning}->{recipe}\n
 <$data->{mixin}->{url}|Mixin>\n
->$data->{mixin}->{recipe}\n
+$data->{mixin}->{recipe}\n
 <$data->{shell}->{url}|Shell>\n
->$data->{shell}->{recipe}\n
+$data->{shell}->{recipe}\n
 <$data->{condiment}->{url}|Condiment>\n
->$data->{condiment}->{recipe}\n};
+$data->{condiment}->{recipe}\n};
 
     $bot->say(
         channel => $response->{channel},
@@ -426,13 +426,15 @@ sub get_kanye_quote {
 }
 
 sub get_insperational_quote {
-    my $json = qx{curl http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json};
+    my $json =
+qx{curl http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json};
     my $data = Load($json);
     return "$data->{quoteText} - $data->{quoteAuthor}";
 }
 
 sub get_programming_quote {
-    my $json = qx{curl https://programming-quotes-api.herokuapp.com/quotes/random};
+    my $json =
+      qx{curl https://programming-quotes-api.herokuapp.com/quotes/random};
     my $data = Load($json);
     return "$data->{en} - $data->{author}";
 }
