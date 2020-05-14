@@ -13,10 +13,13 @@ use Modern::Perl;
 use List::Util qw(shuffle);
 use Slack::RTM::Bot;
 use YAML::XS qw(LoadFile DumpFile Load);
+use Text::CSV::Slurp;
+use LWP::Simple;
 
 my $slack_bot_token = $ENV{SLACK_BOT_TOKEN};
 my $data_file       = $ENV{DATA_FILE};
 my $debug           = $ENV{DEBUG} || 0;
+my $csv_url         = $ENV{CSV_URL};
 
 say "BWSBot is starting!" if $debug;
 
@@ -399,11 +402,40 @@ $bot->start_RTM(
 );
 
 sub get_quote {
-    my @APIs =
-      shuffle( \&get_math_fact, \&get_joke, \&get_cat_fact, 
-        \&get_insperational_quote, \&get_programming_quote, );
-    my $sub = $APIs[0];
-    return $sub->();
+    if ($csv_url) {
+        print "Downloading quotes CSV...";
+        my $raw_csv = get($csv_url);
+        say "Done!";
+        my $quotes  = Text::CSV::Slurp->load( string => $raw_csv );
+        my $index   = rand @$quotes;
+        my $quote   = $quotes->[$index]->{Quote};
+
+        if ( $quote =~ /^PQ: / ) {
+            $quote =~ s/^PQ: /Partner Quote: /;
+        }
+        elsif ( $quote =~ /^HAHA: / ) {
+            $quote =~ s/^HAHA: //;
+        }
+        elsif ( $quote =~ /^MOVE: / ) {
+            $quote =~ s/^MOVE: /Get up and move! /;
+        }
+        elsif ( $quote =~ /^FACT: / ) {
+            $quote =~ s/^FACT: /Fun Fact! /;
+        }
+        elsif ( $quote =~ /^Koha sys pref:/ ) {
+            $quote =~ s/^Koha sys pref: /Koha SysPref Quiz! Do you know what this setting does\? /;
+        }
+
+        say "Using Quote: $quote";
+        return $quote;
+    }
+    else {
+        my @APIs =
+          shuffle( \&get_math_fact, \&get_joke, \&get_cat_fact,
+            \&get_insperational_quote, \&get_programming_quote, );
+        my $sub = $APIs[0];
+        return $sub->();
+    }
 }
 
 sub get_joke {
