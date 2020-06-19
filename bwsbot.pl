@@ -86,11 +86,16 @@ my $handle_bug_numbers = sub {
     my $bug = $2;
 
     my $url  = "https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=$bug";
-    my $text = "Koha community bug $bug: $url";
+
+    my $bug_data = qx{curl $url};
+    my $summary = $bug_data->{summary};
+
+    my $text = "Koha community <$url|bug $bug>: _" . $summary . "_";
 
     $bot->say(
         channel => $response->{channel},
         text    => $text,
+        mrkdwn  => 1,
     );
 };
 $bot->on( { text => $regex_bz }, $handle_bug_numbers );
