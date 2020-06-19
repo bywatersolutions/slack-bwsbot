@@ -13,6 +13,7 @@ use Modern::Perl;
 use List::Util qw(shuffle);
 use Slack::RTM::Bot;
 use YAML::XS qw(LoadFile DumpFile Load);
+use JSON;
 use Text::CSV::Slurp;
 use LWP::Simple;
 
@@ -87,10 +88,10 @@ my $handle_bug_numbers = sub {
 
     my $url  = "https://bugs.koha-community.org/bugzilla3/show_bug.cgi?id=$bug";
 
-    my $bug_data = qx{curl $url};
-    my $summary = $bug_data->{summary};
+    my $res = decode_json( qx{curl https://bugs.koha-community.org/bugzilla3/rest/bug/$bug} );
+    my $bug_data = $res->{bugs}[0];
 
-    my $text = "Koha community <$url|bug $bug>: _" . $summary . "_";
+    my $text = "Koha community <$url|bug $bug>: _" . $bug_data->{summary} . "_ [*". $bug_data->{status} ."*]";
 
     $bot->say(
         channel => $response->{channel},
