@@ -25,6 +25,7 @@ my $csv_url         = $ENV{CSV_URL};
 say "BWSBot is starting!" if $debug;
 
 die "No SLACK_BOT_TOKEN set!" unless $slack_bot_token;
+
 die "No DATA_FILE set!"       unless $data_file;
 
 my $data = LoadFile($data_file);
@@ -36,6 +37,45 @@ unless ($data) {
 my $bot = Slack::RTM::Bot->new( token => $slack_bot_token );
 
 =head1 Capabilities
+
+=head2 bug_branches
+
+    Given a bug number and optionally a shortname, e.g.
+    branches 5676
+    branches 5676 clic
+    this command will return the branches in bywater-koha
+    that contain that bug, filtered by the given shortname.
+
+    If no branch is supplied, the default shortname is 'bywater'
+
+=cut
+
+my $regex_bug_branches  = qr/(branches)\s*(\d+)\s*(\w*)/mi;
+my $handle_bug_branches = sub {
+    my ($response) = @_;
+    warn "handle_bug_branches" if $debug;
+
+    return unless $response->{channel};
+
+    $response->{text} =~ $regex_bug_branches;
+    my $bug = $2;
+    my $shortname = $3 || q{bywater};
+
+    $bug =~ s/^\s+|\s+$//g;
+    $shortname =~ s/^\s+|\s+$//g;
+
+    my $json = qx{curl http://find-branches-by-bugs.bwsdocker1.bywatersolutions.com/$bug/$shortname};
+    my $data = Load($json);
+
+    my $text = qq{I found bug $bug on the following branches for $shortname\n};
+    $text .= "* $_\n" for @$data;
+
+    $bot->say(
+        channel => $response->{channel},
+        text    => $text,
+    );
+};
+$bot->on( { text => $regex_bug_branches }, $handle_bug_branches );
 
 =head2 handle_ticket_numbers
 
