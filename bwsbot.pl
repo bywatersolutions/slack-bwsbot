@@ -67,8 +67,13 @@ my $handle_bug_branches = sub {
     my $json = qx{curl http://find-branches-by-bugs.bwsdocker1.bywatersolutions.com/$bug/$shortname};
     my $data = Load($json);
 
-    my $text = qq{I found bug $bug on the following branches for $shortname\n};
-    $text .= "* $_\n" for @$data;
+    my $text;
+    if ( @$data ) {
+        $text = qq{I found bug $bug on the following branches for $shortname\n};
+        $text .= "* $_\n" for @$data;
+    } else {
+        $text = qq{I could not find bug $bug in any branches for $shortname!\n};
+    }
 
     $bot->say(
         channel => $response->{channel},
