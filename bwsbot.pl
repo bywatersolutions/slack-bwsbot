@@ -28,6 +28,7 @@ die "No SLACK_BOT_TOKEN set!" unless $slack_bot_token;
 
 die "No DATA_FILE set!"       unless $data_file;
 
+`touch $data_file`;
 my $data = LoadFile($data_file);
 unless ($data) {
     $data = { agendas => {} };
