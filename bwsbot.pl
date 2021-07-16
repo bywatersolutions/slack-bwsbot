@@ -26,10 +26,8 @@ say "BWSBot is starting!" if $debug;
 
 die "No SLACK_BOT_TOKEN set!" unless $slack_bot_token;
 
-die "No DATA_FILE set!"       unless $data_file;
-
+warn "No DATA_FILE set!"       unless $data_file;
 $data_file = '/tmp/bwsbot.yml' unless $data_file;
-
 warn "DATA FILE: $data_file" if $debug;
 
 `touch $data_file`;
