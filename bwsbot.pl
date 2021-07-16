@@ -28,9 +28,12 @@ die "No SLACK_BOT_TOKEN set!" unless $slack_bot_token;
 
 die "No DATA_FILE set!"       unless $data_file;
 
+warn "DATA FILE: $data_file" if $debug;
+
 `touch $data_file`;
 my $data = LoadFile($data_file);
 unless ($data) {
+    warn "DATA FILE is empty, initializing." if $debug;
     $data = { agendas => {} };
     DumpFile( $data_file, $data );
 }
