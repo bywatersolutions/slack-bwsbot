@@ -11,4 +11,8 @@ RUN cpanm --notest Modern::Perl Slack::RTM::Bot YAML::XS Text::CSV::Slurp LWP::S
 WORKDIR /app
 COPY . .
 
+COPY self-destruct /etc/cron.d/self-destruct
+RUN chmod 0644 /etc/cron.d/self-destruct
+RUN crontab /etc/cron.d/self-destruct
+
 CMD perl bwsbot.pl
