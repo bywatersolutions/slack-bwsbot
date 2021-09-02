@@ -13,6 +13,5 @@ COPY . .
 
 COPY self-destruct /etc/cron.d/self-destruct
 RUN chmod 0644 /etc/cron.d/self-destruct
-RUN crontab /etc/cron.d/self-destruct
 
 CMD perl bwsbot.pl
