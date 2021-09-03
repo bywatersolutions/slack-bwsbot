@@ -21,6 +21,7 @@ my $slack_bot_token = $ENV{SLACK_BOT_TOKEN};
 my $data_file       = $ENV{DATA_FILE};
 my $debug           = $ENV{DEBUG} || 0;
 my $csv_url         = $ENV{CSV_URL};
+my $minutes_to_live = $ENV{MINUTES_TO_LIVE} || undef;
 
 say "BWSBot is starting!" if $debug;
 
@@ -449,9 +450,12 @@ $bot->start_RTM(
         my $step = 1;
         while (1) {
             sleep 60;
-            print time . " ";
-            say $step % 3 ? "Stayin' alive!" : "Ah, ha, ha, ha";
+            print time . " " . "MINUTES RUN: $step";
             $step++;
+            if ( $minutes_to_live && $step > $minutes_to_live ) {
+                $bot->stop_RTM();
+                exit(0);
+            }
         }
     }
 );
